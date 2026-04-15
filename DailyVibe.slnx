@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DailyVibe.Api/DailyVibe.Api.csproj" />
+    <Project Path="src/DailyVibe.Application/DailyVibe.Application.csproj" />
+    <Project Path="src/DailyVibe.Domain/DailyVibe.Domain.csproj" />
+    <Project Path="src/DailyVibe.Infrastructure/DailyVibe.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DailyVibe.Tests/DailyVibe.Tests.csproj" />
+  </Folder>
+</Solution>
