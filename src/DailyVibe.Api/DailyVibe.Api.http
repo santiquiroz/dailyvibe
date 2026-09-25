@@ -1,6 +1,57 @@
 @DailyVibe.Api_HostAddress = http://localhost:5208
+@email = demo@dailyvibe.dev
+@password = correct-horse-battery
 
-GET {{DailyVibe.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+# @name register
+POST {{DailyVibe.Api_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+###
+
+# @name login
+POST {{DailyVibe.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+###
+
+@token = {{login.response.body.$.token}}
+
+GET {{DailyVibe.Api_HostAddress}}/api/messages/today
+Authorization: Bearer {{token}}
+
+###
+
+POST {{DailyVibe.Api_HostAddress}}/api/messages/generate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "intent": "humorístico, en español, una frase"
+}
+
+###
+
+GET {{DailyVibe.Api_HostAddress}}/api/messages/history?page=1&size=10
+Authorization: Bearer {{token}}
+
+###
+
+PUT {{DailyVibe.Api_HostAddress}}/api/preferences
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "defaultIntent": "estoico, en español, 2 frases máx"
+}
 
 ###
