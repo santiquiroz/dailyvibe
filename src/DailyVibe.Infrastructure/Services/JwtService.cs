@@ -1,22 +1,19 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using DailyVibe.Application.Interfaces;
 using DailyVibe.Domain.Entities;
-using Microsoft.Extensions.Configuration;
+using DailyVibe.Infrastructure.Authentication;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DailyVibe.Infrastructure.Services;
 
-public class JwtService(IConfiguration configuration) : IJwtService
+public class JwtService(IOptions<JwtOptions> options) : IJwtService
 {
     public string GenerateToken(User user)
     {
-        var secret = configuration["Jwt:Secret"]
-            ?? throw new InvalidOperationException("Jwt:Secret is not configured.");
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var jwt = options.Value;
+        var credentials = new SigningCredentials(JwtTokenParameters.CreateSigningKey(jwt), JwtTokenParameters.Algorithm);
 
         var claims = new[]
         {
@@ -26,10 +23,10 @@ public class JwtService(IConfiguration configuration) : IJwtService
         };
 
         var token = new JwtSecurityToken(
-            issuer: configuration["Jwt:Issuer"],
-            audience: configuration["Jwt:Audience"],
+            issuer: jwt.Issuer,
+            audience: jwt.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(60),
+            expires: DateTime.UtcNow.AddMinutes(jwt.ExpiryMinutes),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

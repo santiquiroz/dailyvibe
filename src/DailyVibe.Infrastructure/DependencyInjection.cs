@@ -1,9 +1,11 @@
 using DailyVibe.Application.Interfaces;
+using DailyVibe.Infrastructure.Authentication;
 using DailyVibe.Infrastructure.Persistence;
 using DailyVibe.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace DailyVibe.Infrastructure;
 
@@ -16,6 +18,10 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlite(configuration.GetConnectionString("Default")));
 
+        services.AddOptions<JwtOptions>()
+            .Bind(configuration.GetSection(JwtOptions.SectionName))
+            .ValidateOnStart();
+        services.AddSingleton<IValidateOptions<JwtOptions>, JwtOptionsValidator>();
         services.AddScoped<IJwtService, JwtService>();
 
         services.AddHttpClient<ILmStudioClient, LmStudioHttpClient>(client =>
