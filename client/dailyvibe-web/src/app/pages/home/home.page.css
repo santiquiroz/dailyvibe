@@ -1,0 +1,43 @@
+:host {
+  display: grid;
+  gap: 1rem;
+  max-width: 40rem;
+  margin: 1.5rem auto;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+blockquote {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.history ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.history li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.history li p {
+  margin: 0;
+}

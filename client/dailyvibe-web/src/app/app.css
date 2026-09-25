@@ -1,0 +1,10 @@
+header {
+  padding: 1rem 1.5rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+main {
+  padding: 0 1rem;
+}

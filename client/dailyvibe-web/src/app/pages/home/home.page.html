@@ -1,0 +1,71 @@
+<div class="toolbar">
+  <button type="button" class="link" (click)="logout()">Cerrar sesión</button>
+</div>
+
+<section class="card today" aria-live="polite">
+  <h1>Tu mensaje de hoy</h1>
+  @if (today(); as message) {
+    <blockquote>{{ message.content }}</blockquote>
+    <p class="meta">{{ message.intent }} · {{ message.createdAt | date: 'd MMM y, HH:mm' }}</p>
+  } @else if (loadingToday()) {
+    <p class="meta">Cargando…</p>
+  } @else {
+    <p class="meta">Aún no hay mensaje de hoy.</p>
+  }
+</section>
+
+<section class="card">
+  <label>
+    Intención
+    <textarea
+      [formControl]="intent"
+      rows="3"
+      [attr.maxlength]="intentMaxLength"
+      placeholder="Vacío = tu intención predeterminada (p. ej. estoico, en español, 2 frases)"
+    ></textarea>
+  </label>
+  <div class="actions">
+    <button type="button" (click)="generate()" [disabled]="generating() || intent.invalid">
+      Generar
+    </button>
+    <button type="button" class="secondary" (click)="saveAsDefault()" [disabled]="intent.invalid">
+      Guardar como predeterminada
+    </button>
+  </div>
+  @if (generating()) {
+    <p class="meta">Generando…</p>
+  }
+  @if (notice(); as message) {
+    <p class="notice" role="status">{{ message }}</p>
+  }
+  @if (error(); as message) {
+    <p class="alert" role="alert">{{ message }}</p>
+  }
+</section>
+
+<section class="card history">
+  <h2>Historial</h2>
+  @if (history(); as page) {
+    <ul>
+      @for (message of page.items; track message.id) {
+        <li>
+          <p>{{ message.content }}</p>
+          <p class="meta">
+            {{ message.intent }} · {{ message.createdAt | date: 'd MMM y, HH:mm' }}
+          </p>
+        </li>
+      } @empty {
+        <p class="meta">Aún no hay mensajes.</p>
+      }
+    </ul>
+    <div class="actions">
+      <button type="button" class="secondary" (click)="previousPage()" [disabled]="!hasPrevious()">
+        Anterior
+      </button>
+      <span class="meta">Página {{ page.page }}</span>
+      <button type="button" class="secondary" (click)="nextPage()" [disabled]="!hasNext()">
+        Siguiente
+      </button>
+    </div>
+  }
+</section>
