@@ -67,6 +67,17 @@ public sealed class DailyMessageRepositoryTests : IDisposable
         context.ChangeTracker.Entries().Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task Reads_created_at_back_as_utc()
+    {
+        await AddAsync(NewMessage(_userId, "hoy", Day.AddHours(3)));
+        await using var context = _database.CreateContext();
+
+        var page = await new DailyMessageRepository(context).GetPageAsync(_userId, 1, 1, CancellationToken.None);
+
+        page.Items.Single().CreatedAt.Kind.Should().Be(DateTimeKind.Utc);
+    }
+
     private async Task AddAsync(params DailyMessage[] messages)
     {
         foreach (var message in messages)

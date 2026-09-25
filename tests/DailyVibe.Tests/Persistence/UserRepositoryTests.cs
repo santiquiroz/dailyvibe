@@ -62,6 +62,18 @@ public sealed class UserRepositoryTests : IDisposable
         updated.Should().BeFalse();
     }
 
+    [Fact]
+    public async Task Reads_created_at_back_as_utc()
+    {
+        var user = NewUser("ana@test.dev");
+        await AddAsync(user);
+        await using var context = _database.CreateContext();
+
+        var found = await new UserRepository(context).FindByIdAsync(user.Id, CancellationToken.None);
+
+        found!.CreatedAt.Kind.Should().Be(DateTimeKind.Utc);
+    }
+
     private async Task AddAsync(User user)
     {
         await using var context = _database.CreateContext();

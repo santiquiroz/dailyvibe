@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using DailyVibe.Application.Common;
 using DailyVibe.Application.Exceptions;
 using DailyVibe.Application.Interfaces;
@@ -89,6 +90,19 @@ public sealed class MessagesEndpointsTests : IClassFixture<DailyVibeApiFactory>
         page.Page.Should().Be(1);
         page.Size.Should().Be(2);
         page.TotalCount.Should().Be(3);
+    }
+
+    [Fact]
+    public async Task Messages_read_back_from_the_database_serialize_created_at_as_utc()
+    {
+        using var client = await _factory.CreateAuthenticatedClientAsync();
+        (await client.PostAsync("/api/messages/generate", content: null)).EnsureSuccessStatusCode();
+
+        var today = await client.GetFromJsonAsync<JsonElement>("/api/messages/today");
+        var history = await client.GetFromJsonAsync<JsonElement>("/api/messages/history?page=1&size=1");
+
+        today.GetProperty("createdAt").GetString().Should().EndWith("Z");
+        history.GetProperty("items")[0].GetProperty("createdAt").GetString().Should().EndWith("Z");
     }
 
     [Fact]

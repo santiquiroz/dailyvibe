@@ -16,5 +16,8 @@ public class DailyMessageConfiguration : IEntityTypeConfiguration<DailyMessage>
         builder.Property(m => m.Intent)
             .IsRequired()
             .HasMaxLength(500);
+
+        builder.Property(m => m.CreatedAt)
+            .HasConversion<UtcDateTimeConverter>();
     }
 }

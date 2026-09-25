@@ -24,6 +24,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(500);
 
+        builder.Property(u => u.CreatedAt)
+            .HasConversion<UtcDateTimeConverter>();
+
         builder.HasMany(u => u.DailyMessages)
             .WithOne(m => m.User)
             .HasForeignKey(m => m.UserId)
