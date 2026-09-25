@@ -87,7 +87,7 @@ DailyVibe/
 - .NET 10 (SDK 10.0.202 ya instalado)
 - EF Core + **SQLite** (`Microsoft.EntityFrameworkCore.Sqlite`)
 - MediatR
-- FluentValidation + `FluentValidation.AspNetCore`
+- FluentValidation 12 + `FluentValidation.DependencyInjectionExtensions` (validación vía el `ValidationBehavior` de MediatR; `FluentValidation.AspNetCore` no se usa)
 - BCrypt.Net-Next
 - Microsoft.AspNetCore.Authentication.JwtBearer
 - Swashbuckle.AspNetCore (Swagger con auth)

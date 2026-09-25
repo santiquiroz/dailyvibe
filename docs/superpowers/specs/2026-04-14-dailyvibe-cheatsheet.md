@@ -84,7 +84,7 @@ dotnet add src/DailyVibe.Api package Microsoft.AspNetCore.Authentication.JwtBear
 dotnet add src/DailyVibe.Api package Microsoft.EntityFrameworkCore.Design
 dotnet add src/DailyVibe.Api package Swashbuckle.AspNetCore
 dotnet add src/DailyVibe.Api package MediatR
-dotnet add src/DailyVibe.Api package FluentValidation.AspNetCore
+# Sin FluentValidation.AspNetCore: la validación corre en el ValidationBehavior de MediatR (Application)
 
 # Tests
 dotnet add tests/DailyVibe.Tests package Moq
