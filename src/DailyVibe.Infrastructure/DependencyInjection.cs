@@ -1,5 +1,6 @@
 using DailyVibe.Application.Interfaces;
 using DailyVibe.Infrastructure.Authentication;
+using DailyVibe.Infrastructure.LmStudio;
 using DailyVibe.Infrastructure.Persistence;
 using DailyVibe.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -24,11 +25,15 @@ public static class DependencyInjection
         services.AddSingleton<IValidateOptions<JwtOptions>, JwtOptionsValidator>();
         services.AddScoped<IJwtService, JwtService>();
 
-        services.AddHttpClient<ILmStudioClient, LmStudioHttpClient>(client =>
+        services.AddOptions<LmStudioOptions>()
+            .Bind(configuration.GetSection(LmStudioOptions.SectionName))
+            .ValidateOnStart();
+        services.AddSingleton<IValidateOptions<LmStudioOptions>, LmStudioOptionsValidator>();
+        services.AddHttpClient<ILmStudioClient, LmStudioHttpClient>((provider, client) =>
         {
-            var baseUrl = configuration["LmStudio:BaseUrl"] ?? "http://localhost:1234";
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(60);
+            var lmStudio = provider.GetRequiredService<IOptions<LmStudioOptions>>().Value;
+            client.BaseAddress = new Uri(lmStudio.BaseUrl);
+            client.Timeout = TimeSpan.FromSeconds(lmStudio.TimeoutSeconds);
         });
 
         return services;
