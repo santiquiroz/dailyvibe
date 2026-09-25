@@ -28,7 +28,12 @@
     <button type="button" (click)="generate()" [disabled]="generating() || intent.invalid">
       Generar
     </button>
-    <button type="button" class="secondary" (click)="saveAsDefault()" [disabled]="intent.invalid">
+    <button
+      type="button"
+      class="secondary"
+      (click)="saveAsDefault()"
+      [disabled]="!canSaveAsDefault() || intent.invalid"
+    >
       Guardar como predeterminada
     </button>
   </div>

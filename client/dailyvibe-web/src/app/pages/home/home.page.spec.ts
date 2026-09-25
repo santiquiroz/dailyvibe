@@ -50,6 +50,7 @@ describe('HomePage', () => {
     const textarea = element().querySelector('textarea')!;
     textarea.value = intent;
     textarea.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
   };
 
   beforeEach(() => {
@@ -120,6 +121,34 @@ describe('HomePage', () => {
     expect(put.request.method).toBe('PUT');
     expect(put.request.body).toEqual({ defaultIntent: 'reflexivo' });
     put.flush(null, { status: 204, statusText: 'No Content' });
+  });
+
+  it('keeps "Guardar como predeterminada" disabled while the intent is blank', async () => {
+    await render(message('m-1', 'Respira.'), page([]));
+    const save = button('Guardar como predeterminada');
+
+    expect(save.disabled).toBeTrue();
+    typeIntent('   ');
+    expect(save.disabled).toBeTrue();
+    typeIntent('reflexivo');
+    expect(save.disabled).toBeFalse();
+  });
+
+  it('disables "Guardar como predeterminada" while the save is in flight', async () => {
+    await render(message('m-1', 'Respira.'), page([]));
+    typeIntent('reflexivo');
+    const save = button('Guardar como predeterminada');
+
+    save.click();
+    await fixture.whenStable();
+    expect(save.disabled).toBeTrue();
+    save.click();
+
+    http
+      .expectOne(`${BASE_URL}/api/preferences`)
+      .flush(null, { status: 204, statusText: 'No Content' });
+    await fixture.whenStable();
+    expect(save.disabled).toBeFalse();
   });
 
   it('pages through the history', async () => {

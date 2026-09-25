@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -38,8 +39,16 @@ export class HomePage implements OnInit {
   protected readonly loadingToday = signal(true);
   protected readonly history = signal<PagedResult<DailyMessage> | null>(null);
   protected readonly generating = signal(false);
+  protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly notice = signal<string | null>(null);
+
+  private readonly intentValue = toSignal(this.intent.valueChanges, {
+    initialValue: this.intent.value,
+  });
+  protected readonly canSaveAsDefault = computed(
+    () => !this.saving() && normalizeIntent(this.intentValue()) !== null,
+  );
 
   protected readonly hasPrevious = computed(() => (this.history()?.page ?? 1) > 1);
   protected readonly hasNext = computed(() => {
@@ -66,14 +75,18 @@ export class HomePage implements OnInit {
 
   protected saveAsDefault(): void {
     const intent = normalizeIntent(this.intent.value);
-    if (intent === null || this.intent.invalid) {
+    if (intent === null || this.intent.invalid || this.saving()) {
       return;
     }
+    this.saving.set(true);
     this.clearFeedback();
-    this.api.updatePreferences(intent).subscribe({
-      next: () => this.notice.set('Intención guardada como predeterminada.'),
-      error: (error: unknown) => this.fail(error),
-    });
+    this.api
+      .updatePreferences(intent)
+      .pipe(finalize(() => this.saving.set(false)))
+      .subscribe({
+        next: () => this.notice.set('Intención guardada como predeterminada.'),
+        error: (error: unknown) => this.fail(error),
+      });
   }
 
   protected previousPage(): void {
