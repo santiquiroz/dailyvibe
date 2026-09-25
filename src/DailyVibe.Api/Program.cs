@@ -1,4 +1,5 @@
 using DailyVibe.Api.Authentication;
+using DailyVibe.Application;
 using DailyVibe.Infrastructure;
 using DailyVibe.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddJwtBearerAuthentication();
 

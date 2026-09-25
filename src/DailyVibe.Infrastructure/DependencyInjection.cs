@@ -2,6 +2,7 @@ using DailyVibe.Application.Interfaces;
 using DailyVibe.Infrastructure.Authentication;
 using DailyVibe.Infrastructure.LmStudio;
 using DailyVibe.Infrastructure.Persistence;
+using DailyVibe.Infrastructure.Persistence.Repositories;
 using DailyVibe.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +19,9 @@ public static class DependencyInjection
     {
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlite(configuration.GetConnectionString("Default")));
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IDailyMessageRepository, DailyMessageRepository>();
+        services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 
         services.AddOptions<JwtOptions>()
             .Bind(configuration.GetSection(JwtOptions.SectionName))
